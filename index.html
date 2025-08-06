@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Falta poco para vernos, Yisleiry! ❤️</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Pacifico for a romantic feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles to integrate with Tailwind and add specific fonts/background */
+        body {
+            font-family: 'Pacifico', cursive;
+            /* Romantic gradient background */
+            background: linear-gradient(to right, #ff9a9e, #fad0c4);
+        }
+        /* Ensure the countdown numbers are large and clear */
+        .countdown-number {
+            font-size: 5rem; /* Equivalent to text-7xl or text-8xl in Tailwind, but more precise */
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+        }
+        /* Style for the message box */
+        #message-box {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .message-content {
+            background: linear-gradient(to bottom right, #ff7e5f, #feb47b);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen text-white text-center p-4">
+    <div class="container bg-white bg-opacity-30 p-8 md:p-12 rounded-3xl shadow-2xl backdrop-blur-md max-w-lg w-full">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-shadow-lg">¡Hola mi amor Yisleiry! 🥰</h1>
+        <p class="text-xl md:text-2xl mb-8">Falta muy poco para que volvamos a estar juntos.</p>
+
+        <div id="countdown" class="flex justify-center items-center space-x-4 md:space-x-8">
+            <div class="countdown-item flex flex-col items-center">
+                <span id="hours" class="countdown-number">00</span>
+                <p class="text-lg md:text-xl mt-2">horas</p>
+            </div>
+            <div class="countdown-item flex flex-col items-center">
+                <span id="minutes" class="countdown-number">00</span>
+                <p class="text-lg md:text-xl mt-2">minutos</p>
+            </div>
+            <div class="countdown-item flex flex-col items-center">
+                <span id="seconds" class="countdown-number">00</span>
+                <p class="text-lg md:text-xl mt-2">segundos</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message box for when the countdown finishes -->
+    <div id="message-box">
+        <div class="message-content">
+            <p>¡Llegó el momento de vernos, mi amor! ❤️</p>
+            <p>¡Te amo mucho!</p>
+        </div>
+    </div>
+
+    <script>
+        function startCountdown() {
+            // Define el tiempo total para el contador (24 horas en milisegundos)
+            const totalTimeInMilliseconds = 16 * 60 * 60 * 1000;
+            let timeRemaining = totalTimeInMilliseconds;
+
+            // Obtiene las referencias a los elementos HTML
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+            const messageBox = document.getElementById('message-box');
+
+            // Función para actualizar el contador
+            const updateCountdown = () => {
+                // Si el tiempo restante es menor o igual a 0
+                if (timeRemaining <= 0) {
+                    clearInterval(countdownInterval); // Detiene el intervalo
+                    hoursEl.textContent = '00';
+                    minutesEl.textContent = '00';
+                    secondsEl.textContent = '00';
+                    messageBox.style.display = 'flex'; // Muestra el mensaje final
+                    return; // Sale de la función
+                }
+
+                // Calcula las horas, minutos y segundos restantes
+                const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                // Actualiza el texto de los elementos HTML, asegurando dos dígitos
+                hoursEl.textContent = String(hours).padStart(2, '0');
+                minutesEl.textContent = String(minutes).padStart(2, '0');
+                secondsEl.textContent = String(seconds).padStart(2, '0');
+
+                // Decrementa el tiempo restante en 1 segundo
+                timeRemaining -= 1000;
+            };
+
+            // Llama a updateCountdown una vez inmediatamente para evitar un retraso inicial
+            updateCountdown();
+            // Configura el intervalo para llamar a updateCountdown cada segundo
+            const countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        // Inicia el contador cuando la ventana ha cargado completamente
+        window.onload = startCountdown;
+    </script>
+</body>
+</html>
