@@ -121,6 +121,7 @@
             const minutesEl = document.getElementById('minutes');
             const secondsEl = document.getElementById('seconds');
             const messageBox = document.getElementById('message-box');
+            let countdownInterval;
 
             const totalTimeInMilliseconds = 13 * 60 * 60 * 1000;
             let endTime = localStorage.getItem('countdownEndTime');
