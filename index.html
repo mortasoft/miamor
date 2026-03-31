@@ -14,12 +14,24 @@
             font-family: 'Pacifico', cursive;
             /* Romantic gradient background */
             background: linear-gradient(to right, #ff9a9e, #fad0c4);
+            overflow: hidden; /* Hide scrollbar for falling hearts */
         }
         /* Ensure the countdown numbers are large and clear */
         .countdown-number {
             font-size: 5rem; /* Equivalent to text-7xl or text-8xl in Tailwind, but more precise */
             font-weight: bold;
             text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+        }
+        /* Glassmorphism item style for countdown elements */
+        .countdown-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            min-width: 120px;
         }
         /* Style for the message box */
         #message-box {
@@ -54,25 +66,42 @@
                 transform: scale(1);
             }
         }
+        /* Floating hearts styles */
+        .heart {
+            position: fixed;
+            top: -10vh;
+            transform: translateY(0);
+            animation: fall 10s linear infinite;
+            z-index: -1;
+            font-size: 2rem;
+            color: #ff4b5c;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh);
+            }
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen text-white text-center p-4">
-    <div class="container bg-white bg-opacity-30 p-8 md:p-12 rounded-3xl shadow-2xl backdrop-blur-md max-w-lg w-full">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-shadow-lg">¡Hola mi amor Yisleiry! 🥰</h1>
-        <p class="text-xl md:text-2xl mb-8">Falta muy poco para que volvamos a estar juntos.</p>
+    <div class="container bg-white bg-opacity-20 border border-white border-opacity-30 p-8 md:p-12 rounded-3xl shadow-2xl backdrop-blur-lg max-w-2xl w-full" style="z-index: 10;">
+        <h1 class="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">¡Hola mi amor Yisleiry! 🥰</h1>
+        <p class="text-xl md:text-3xl mb-10 drop-shadow-md">Falta muy poco para que volvamos a estar juntos.</p>
 
-        <div id="countdown" class="flex justify-center items-center space-x-4 md:space-x-8">
+        <div id="countdown" class="flex flex-wrap justify-center items-center gap-4 md:gap-8">
             <div class="countdown-item flex flex-col items-center">
                 <span id="hours" class="countdown-number">00</span>
-                <p class="text-lg md:text-xl mt-2">horas</p>
+                <p class="text-lg md:text-2xl mt-2">horas</p>
             </div>
             <div class="countdown-item flex flex-col items-center">
                 <span id="minutes" class="countdown-number">00</span>
-                <p class="text-lg md:text-xl mt-2">minutos</p>
+                <p class="text-lg md:text-2xl mt-2">minutos</p>
             </div>
             <div class="countdown-item flex flex-col items-center">
                 <span id="seconds" class="countdown-number">00</span>
-                <p class="text-lg md:text-xl mt-2">segundos</p>
+                <p class="text-lg md:text-2xl mt-2">segundos</p>
             </div>
         </div>
     </div>
@@ -87,27 +116,39 @@
 
     <script>
         function startCountdown() {
-            // Define el tiempo total para el contador (24 horas en milisegundos)
-            const totalTimeInMilliseconds = 13 * 60 * 60 * 1000;
-            let timeRemaining = totalTimeInMilliseconds;
-
-            // Obtiene las referencias a los elementos HTML
+            // Referencias a los elementos HTML
             const hoursEl = document.getElementById('hours');
             const minutesEl = document.getElementById('minutes');
             const secondsEl = document.getElementById('seconds');
             const messageBox = document.getElementById('message-box');
             let countdownInterval;
 
+            const totalTimeInMilliseconds = 13 * 60 * 60 * 1000;
+            let endTime = localStorage.getItem('countdownEndTime');
+
+            // Si no hay un tiempo de finalización guardado, lo calculamos y lo guardamos
+            if (!endTime) {
+                endTime = Date.now() + totalTimeInMilliseconds;
+                localStorage.setItem('countdownEndTime', endTime);
+            } else {
+                endTime = parseInt(endTime, 10);
+            }
+
+            let countdownInterval;
+
             // Función para actualizar el contador
             const updateCountdown = () => {
+                const now = Date.now();
+                const timeRemaining = endTime - now;
+
                 // Si el tiempo restante es menor o igual a 0
                 if (timeRemaining <= 0) {
-                    clearInterval(countdownInterval); // Detiene el intervalo
+                    clearInterval(countdownInterval);
                     hoursEl.textContent = '00';
                     minutesEl.textContent = '00';
                     secondsEl.textContent = '00';
                     messageBox.style.display = 'flex'; // Muestra el mensaje final
-                    return; // Sale de la función
+                    return;
                 }
 
                 // Calcula las horas, minutos y segundos restantes
@@ -119,19 +160,35 @@
                 hoursEl.textContent = String(hours).padStart(2, '0');
                 minutesEl.textContent = String(minutes).padStart(2, '0');
                 secondsEl.textContent = String(seconds).padStart(2, '0');
-
-                // Decrementa el tiempo restante en 1 segundo
-                timeRemaining -= 1000;
             };
 
-            // Llama a updateCountdown una vez inmediatamente para evitar un retraso inicial
             updateCountdown();
-            // Configura el intervalo para llamar a updateCountdown cada segundo
             countdownInterval = setInterval(updateCountdown, 1000);
         }
 
-        // Inicia el contador cuando la ventana ha cargado completamente
-        window.onload = startCountdown;
+        window.onload = () => {
+            startCountdown();
+            createHearts();
+        };
+
+        // Función para crear corazones flotantes
+        function createHearts() {
+            const heartContainer = document.body;
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = Math.random() * 2 + 3 + 's'; // random duration between 3s and 5s
+                heart.style.fontSize = Math.random() * 1.5 + 1 + 'rem'; // random size
+                heartContainer.appendChild(heart);
+
+                // Remove heart after it falls down
+                setTimeout(() => {
+                    heart.remove();
+                }, 5000);
+            }, 300); // Create a new heart every 300ms
+        }
     </script>
 </body>
 </html>
