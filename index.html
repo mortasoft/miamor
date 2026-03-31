@@ -96,6 +96,7 @@
             const minutesEl = document.getElementById('minutes');
             const secondsEl = document.getElementById('seconds');
             const messageBox = document.getElementById('message-box');
+            let countdownInterval;
 
             // Función para actualizar el contador
             const updateCountdown = () => {
@@ -126,7 +127,7 @@
             // Llama a updateCountdown una vez inmediatamente para evitar un retraso inicial
             updateCountdown();
             // Configura el intervalo para llamar a updateCountdown cada segundo
-            const countdownInterval = setInterval(updateCountdown, 1000);
+            countdownInterval = setInterval(updateCountdown, 1000);
         }
 
         // Inicia el contador cuando la ventana ha cargado completamente
